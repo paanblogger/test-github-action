@@ -1,10 +1,19 @@
-            - name: Google Cloud Compute Engine Deploy
-  # You may pin to the exact commit or the version.
-  # uses: mattes/gce-deploy-action@08ed099d6f3d9fa139212a5024ff759b529551fc
-  uses: mattes/gce-deploy-action@v5.0.0
-  with:
-    # Either a path or the contents of a Service Account JSON Key.
-    creds: 
-    # Path to config file
-    config: # optional, default is deploy.yml
-          
+common:
+  labels:
+    gitsha: ${{GITHUB_SHA}}
+
+deploys:
+  - name: my-app-deploy
+    region: us-central1
+    instance_group: my-app-instance-group
+    instance_template_base: my-app-instance-template-base
+    instance_template: my-app-${{GITHUB_RUN_NUMBER}}-${{GITHUB_SHA}}
+    cloud_init: cloud-init.yml # see example dir
+    labels: # will also have gitsha from common section
+      version: ${{APP_VERSION}}
+    tags:
+      - my-tag123
+    update_policy:
+      min_ready_sec: 30
+
+delete_instance_templates_after: false
